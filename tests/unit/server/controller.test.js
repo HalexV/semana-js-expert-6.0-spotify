@@ -18,7 +18,16 @@ describe('#Controller', () => {
   
       expect(getFileStreamSpy).toHaveBeenCalledWith(expectedFileName)
     })
+
+    test('it should throw when getFileStream throws', async () => {
+      const sut = new Controller(serviceStub)
+      const expectedFileName = 'any'
+  
+      jest.spyOn(serviceStub, 'getFileStream').mockRejectedValueOnce(new Error())
+  
+      const result = sut.getFileStream(expectedFileName)
+  
+      await expect(result).rejects.toThrowError()
+    })
   })
-  
-  
 })
