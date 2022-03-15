@@ -9,7 +9,7 @@
     "live-reload": "nodemon server/index.js",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest --no-cache",
     "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --no-cache --watchAll",
-    "test:coverage": "NODE_OPTIONS=--experimental-vm-modules jest --no-cache --coverage"
+    "test:coverage": "NODE_OPTIONS=--experimental-vm-modules jest --no-cache --coverage tests/unit"
   },
   "repository": {
     "type": "git",
