@@ -7,7 +7,10 @@ import TestUtil from '../_util/testUtil.js'
 
 const {
   pages,
-  location
+  location,
+  constants: {
+    CONTENT_TYPE
+  }
 } = config
 
 describe('#Routes - test suite for api response', () => {
@@ -74,6 +77,37 @@ describe('#Routes - test suite for api response', () => {
 
     expect(getFileStreamSpy).toBeCalledWith(pages.controllerHTML)
     expect(pipeSpy).toHaveBeenCalledWith(params.response)
+  })
+
+  test(`GET /file.ext - should respond with file stream`, async () => {
+    const params = TestUtil.defaultHandleParams()
+    const filename = '/index.html'
+    params.request.method = 'GET'
+    params.request.url = filename
+
+    const expectedType = '.html'
+    const mockFileStream = TestUtil.generateReadableStream(['data'])
+
+    const getFileStreamSpy = jest.spyOn(
+      Controller.prototype,
+      Controller.prototype.getFileStream.name
+    ).mockResolvedValueOnce({
+      stream: mockFileStream,
+      type: expectedType
+    })
+
+    const pipeSpy = jest.spyOn(mockFileStream, 'pipe').mockReturnValueOnce()
+
+    await handler(...params.values())
+
+    expect(getFileStreamSpy).toBeCalledWith(filename)
+    expect(pipeSpy).toHaveBeenCalledWith(params.response)
+    expect(params.response.writeHead).toHaveBeenCalledWith(
+      200,
+      {
+        'Content-Type': CONTENT_TYPE[expectedType]
+      }
+    )
   })
 
   test.todo(`GET /unknown - given a nonexistent route it should respond with 404`)
