@@ -1,4 +1,6 @@
 import config from "./config.js"
+import {Service} from './service.js'
+
 import { Controller } from "./controller.js"
 import { logger } from "./util.js"
 
@@ -13,7 +15,7 @@ const {
   }
 } = config
 
-const controller = new Controller()
+const controller = new Controller(new Service())
 
 async function routes(request, response) {
   const { method, url } = request
