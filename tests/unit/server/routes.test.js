@@ -53,8 +53,29 @@ describe('#Routes - test suite for api response', () => {
     expect(getFileStreamSpy).toBeCalledWith(pages.homeHTML)
     expect(pipeSpy).toHaveBeenCalledWith(params.response)
   })
-  
-  test.todo(`GET /controller - should response with ${pages.controllerHTML} file stream`)
+
+  test(`GET /controller - should response with ${pages.controllerHTML} file stream`, async () => {
+    const params = TestUtil.defaultHandleParams()
+    params.request.method = 'GET'
+    params.request.url = '/controller'
+
+    const mockFileStream = TestUtil.generateReadableStream(['data'])
+
+    const getFileStreamSpy = jest.spyOn(
+      Controller.prototype,
+      Controller.prototype.getFileStream.name
+    ).mockResolvedValueOnce({
+      stream: mockFileStream
+    })
+
+    const pipeSpy = jest.spyOn(mockFileStream, 'pipe').mockReturnValueOnce()
+
+    await handler(...params.values())
+
+    expect(getFileStreamSpy).toBeCalledWith(pages.controllerHTML)
+    expect(pipeSpy).toHaveBeenCalledWith(params.response)
+  })
+
   test.todo(`GET /unknown - given a nonexistent route it should respond with 404`)
 
   describe('exceptions', () => {
