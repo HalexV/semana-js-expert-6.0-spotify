@@ -133,5 +133,26 @@ describe('#Service', () => {
       expect(getFileInfoMock).toHaveBeenCalledWith(expectedFile)
 
     })
+
+    test('it should call createFileStream with name', async () => {
+      const sut = new Service()
+
+      const getFileInfoMock = jest.fn().mockResolvedValueOnce({
+        name: 'whatever',
+        type: 'any'
+      })
+
+      const createFileStreamMock = jest.fn().mockReturnValueOnce()
+
+      sut.getFileInfo = getFileInfoMock
+      sut.createFileStream = createFileStreamMock 
+
+      const expectedName = 'whatever'
+
+      await sut.getFileStream('any')
+
+      expect(createFileStreamMock).toHaveBeenCalledWith(expectedName)
+
+    })
   })
 })
