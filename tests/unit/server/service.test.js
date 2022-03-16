@@ -53,5 +53,18 @@ describe('#Service', () => {
 
       expect(joinSpy).toHaveBeenCalledWith(publicDir, expectedFile)
     })
+
+    test('it should call access with fullFilePath', async () => {
+      const sut = new Service()
+      const expectedFullFilePath = 'any'
+      
+      jest.spyOn(path, path.join.name).mockReturnValueOnce(expectedFullFilePath)
+      const accessSpy = jest.spyOn(fsPromises, fsPromises.access.name).mockResolvedValueOnce()
+      jest.spyOn(path, path.extname.name).mockResolvedValueOnce()
+
+      await sut.getFileInfo('any')
+
+      expect(accessSpy).toHaveBeenCalledWith(expectedFullFilePath)
+    })
   })
 })
