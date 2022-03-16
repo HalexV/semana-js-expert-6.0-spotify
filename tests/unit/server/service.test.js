@@ -47,7 +47,7 @@ describe('#Service', () => {
       
       const joinSpy = jest.spyOn(path, path.join.name).mockReturnValueOnce()
       jest.spyOn(fsPromises, fsPromises.access.name).mockResolvedValueOnce()
-      jest.spyOn(path, path.extname.name).mockResolvedValueOnce()
+      jest.spyOn(path, path.extname.name).mockReturnValueOnce()
 
       await sut.getFileInfo(expectedFile)
 
@@ -60,7 +60,7 @@ describe('#Service', () => {
       
       jest.spyOn(path, path.join.name).mockReturnValueOnce(expectedFullFilePath)
       const accessSpy = jest.spyOn(fsPromises, fsPromises.access.name).mockResolvedValueOnce()
-      jest.spyOn(path, path.extname.name).mockResolvedValueOnce()
+      jest.spyOn(path, path.extname.name).mockReturnValueOnce()
 
       await sut.getFileInfo('any')
 
@@ -73,11 +73,30 @@ describe('#Service', () => {
       
       jest.spyOn(path, path.join.name).mockReturnValueOnce(expectedFullFilePath)
       jest.spyOn(fsPromises, fsPromises.access.name).mockResolvedValueOnce()
-      const extnameSpy = jest.spyOn(path, path.extname.name).mockResolvedValueOnce()
+      const extnameSpy = jest.spyOn(path, path.extname.name).mockReturnValueOnce()
 
       await sut.getFileInfo('any')
 
       expect(extnameSpy).toHaveBeenCalledWith(expectedFullFilePath)
+    })
+
+    test('it should return an object with type and name on success', async () => {
+      const sut = new Service()
+      const mockFullFilePath = 'any'
+      const mockFileType = 'any'
+
+      const expected = {
+        type: mockFileType,
+        name: mockFullFilePath
+      }
+      
+      jest.spyOn(path, path.join.name).mockReturnValueOnce(mockFullFilePath)
+      jest.spyOn(fsPromises, fsPromises.access.name).mockResolvedValueOnce()
+      jest.spyOn(path, path.extname.name).mockReturnValueOnce(mockFileType)
+
+      const result = await sut.getFileInfo('any')
+
+      expect(result).toStrictEqual(expected)
     })
   })
 })
