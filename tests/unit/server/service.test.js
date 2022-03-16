@@ -98,5 +98,17 @@ describe('#Service', () => {
 
       expect(result).toStrictEqual(expected)
     })
+
+    test('it should throw when access throws', async () => {
+      const sut = new Service()
+
+      jest.spyOn(path, path.join.name).mockReturnValueOnce()
+      jest.spyOn(fsPromises, fsPromises.access.name).mockRejectedValueOnce(new Error())
+      jest.spyOn(path, path.extname.name).mockReturnValueOnce()
+
+      const result = sut.getFileInfo('any')
+
+      expect(result).rejects.toThrowError()
+    })
   })
 })
