@@ -15,7 +15,7 @@ const defaultConfig = {
   },
   maxWorkers: '50%',
   watchPathIgnorePatterns: [
-    'node_modules'
+    'node_modules',
   ],
   transformIgnorePatterns: [
     'node_modules'
@@ -30,7 +30,7 @@ export default {
     displayName: 'backend',
     collectCoverageFrom: [
       'server/',
-      '!server/index.js',
+      '!server/index.js'
     ],
     transformIgnorePatterns: [
       ...defaultConfig.transformIgnorePatterns,
