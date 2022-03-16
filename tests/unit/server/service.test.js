@@ -154,5 +154,29 @@ describe('#Service', () => {
       expect(createFileStreamMock).toHaveBeenCalledWith(expectedName)
 
     })
+
+    test('it should return an object with stream and type on success', async () => {
+      const sut = new Service()
+
+      const getFileInfoMock = jest.fn().mockResolvedValueOnce({
+        name: 'whatever',
+        type: 'any'
+      })
+
+      const createFileStreamMock = jest.fn().mockReturnValueOnce('any_stream')
+
+      sut.getFileInfo = getFileInfoMock
+      sut.createFileStream = createFileStreamMock 
+
+      const expected = {
+        stream: 'any_stream',
+        type: 'any'
+      }
+
+      const result = await sut.getFileStream('any')
+
+      expect(result).toStrictEqual(expected)
+
+    })
   })
 })
