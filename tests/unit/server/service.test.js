@@ -178,5 +178,20 @@ describe('#Service', () => {
       expect(result).toStrictEqual(expected)
 
     })
+
+    test('it should throw when getFileInfo throws', async () => {
+      const sut = new Service()
+
+      const getFileInfoMock = jest.fn().mockRejectedValueOnce(new Error())
+
+      const createFileStreamMock = jest.fn().mockReturnValueOnce()
+
+      sut.getFileInfo = getFileInfoMock
+      sut.createFileStream = createFileStreamMock 
+
+      const result = sut.getFileStream('any')
+
+      await expect(result).rejects.toThrowError()
+    })
   })
 })
