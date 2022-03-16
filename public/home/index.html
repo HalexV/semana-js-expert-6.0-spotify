@@ -147,7 +147,7 @@
     </div>
 
     <div class="audio-player">
-      <audio id="audio" preload="none" controls autoplay src="./home/../home/../home/audio/songs/conversation.mp3"></audio>
+      <audio id="audio" preload="none" controls autoplay></audio>
 
       <div class="player-controls">
         <div class="player__actions">
@@ -173,6 +173,12 @@
     <p>Listening on Erick Wendel</p>
   </div>
   <script src="./home/js/animation.js"></script>
+  <script>
+    // bypass (gambiarra) prevent cache
+    window.onload = () => {
+      document.getElementById('audio').src = '/stream?id=' + Date.now()
+    }
+  </script>
 </body>
 
 </html>
