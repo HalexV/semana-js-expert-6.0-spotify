@@ -1,0 +1,30 @@
+Comando para ver as informações do audio
+sox \
+  --i \
+  "audio/songs/conversation.mp3"
+
+Comando para alterar algumas propriedades do audio. Converter para o mesmo bit rate
+sox \
+  -v 0.99 \
+  -t mp3 \
+  "caminho do audio" \
+  -r 48000 \
+  -t mp3 \
+  "nome da saida do arquivo"
+
+Comando para obter o bit rate
+sox \
+  --i \
+  -B \
+  "audio/songs/conversation.mp3"
+
+Concatenar dois audios
+sox \
+  -t mp3 \
+  -v 0.99 \
+  -m "audio1.mp3" \
+  -t mp3 \
+  -v 0.99 \
+  "audio2.mp3" \
+  -t mp3 \
+  "output.mp3"
