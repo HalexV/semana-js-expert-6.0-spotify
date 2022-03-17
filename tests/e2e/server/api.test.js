@@ -80,6 +80,16 @@ describe('API E2E Suite Test', () => {
       }
     }
 
+    test('it should return 404 when accessing an invalid route', async () => {
+      const server = await getTestServer()
+
+      const response = await server.testServer.get('/invalid')
+
+      expect(response.status).toBe(404)
+
+      server.kill()
+    })
+
     describe('GET /', () => {
       test('it should return status 302', async () => {
         const server = await getTestServer()
