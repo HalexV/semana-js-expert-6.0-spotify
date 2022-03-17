@@ -65,46 +65,66 @@ describe('API E2E Suite Test', () => {
         }
       }
     }
+
+    describe('GET /', () => {
+      test('it should return status 302', async () => {
+        const server = await getTestServer()
+
+        const response = await server.testServer.get('/')
+
+        expect(response.status).toBe(302)
+        expect(response.headers).toMatchObject({
+          location: '/home'
+        })
+
+        server.kill()
+      })
+    })
+
     
-    test('it should not receive data stream if the process is not playing', async () => {
-      const server = await getTestServer()
-      const onChunk = jest.fn()
 
-      pipeAndReadStreamData(
-        server.testServer.get('/stream'),
-        onChunk
-      )
-
-      await setTimeout(RETENTION_DATA_PERIOD)
-
-      server.kill()
-      expect(onChunk).not.toHaveBeenCalled()
-
+    describe('GET /stream', () => {
+      test('it should not receive data stream if the process is not playing', async () => {
+        const server = await getTestServer()
+        const onChunk = jest.fn()
+  
+        pipeAndReadStreamData(
+          server.testServer.get('/stream'),
+          onChunk
+        )
+  
+        await setTimeout(RETENTION_DATA_PERIOD)
+  
+        server.kill()
+        expect(onChunk).not.toHaveBeenCalled()
+  
+      })
+  
+      test('it should receive data stream if the process is playing', async () => {
+        const server = await getTestServer()
+        const onChunk = jest.fn()
+  
+        const {send} = commandSender(server.testServer)
+  
+        pipeAndReadStreamData(
+          server.testServer.get('/stream'),
+          onChunk
+        )
+        
+        await send(possibleCommands.start)
+        await setTimeout(RETENTION_DATA_PERIOD)
+        await send(possibleCommands.stop)
+  
+        const [
+          [buffer]
+        ] = onChunk.mock.calls
+  
+        expect(buffer).toBeInstanceOf(Buffer)
+        expect(buffer.length).toBeGreaterThan(1000)
+  
+        server.kill()
+      })
     })
-
-    test('it should receive data stream if the process is playing', async () => {
-      const server = await getTestServer()
-      const onChunk = jest.fn()
-
-      const {send} = commandSender(server.testServer)
-
-      pipeAndReadStreamData(
-        server.testServer.get('/stream'),
-        onChunk
-      )
-      
-      await send(possibleCommands.start)
-      await setTimeout(RETENTION_DATA_PERIOD)
-      await send(possibleCommands.stop)
-
-      const [
-        [buffer]
-      ] = onChunk.mock.calls
-
-      expect(buffer).toBeInstanceOf(Buffer)
-      expect(buffer.length).toBeGreaterThan(1000)
-
-      server.kill()
-    })
+    
   })
 })
