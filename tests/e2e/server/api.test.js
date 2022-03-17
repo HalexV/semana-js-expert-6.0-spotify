@@ -234,6 +234,19 @@ describe('API E2E Suite Test', () => {
         }
       })
     })
+
+    describe('GET Files', () => {
+      test('it should return 200 and a valid file from public', async () => {
+        const server = await getTestServer()
+
+        const response = await server.testServer.get('/home/css/styles.css')
+
+        const styleCssFile = fs.readFileSync(join(publicDir, '/home/css/styles.css'))
+
+        expect(response.status).toBe(200)
+        expect(response.text).toStrictEqual(styleCssFile.toString())
+      })
+    })
     
   })
 })
