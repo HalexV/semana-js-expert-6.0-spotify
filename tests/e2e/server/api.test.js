@@ -16,7 +16,8 @@ import config from '../../../server/config.js'
 
 const {
   pages: {
-    homeHTML
+    homeHTML,
+    controllerHTML
   },
   dir: {
     publicDir
@@ -104,6 +105,21 @@ describe('API E2E Suite Test', () => {
 
         expect(response.status).toBe(200)
         expect(response.text).toStrictEqual(homeHTMLDocument.toString())
+
+        server.kill()
+      })
+    })
+
+    describe('GET /controller', () => {
+      test('it should return 200 and the html document', async () => {
+        const server = await getTestServer()
+
+        const response = await server.testServer.get('/controller')
+
+        const controllerHTMLDocument = fs.readFileSync(join(publicDir, controllerHTML))
+
+        expect(response.status).toBe(200)
+        expect(response.text).toStrictEqual(controllerHTMLDocument.toString())
 
         server.kill()
       })
