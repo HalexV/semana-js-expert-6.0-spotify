@@ -245,6 +245,18 @@ describe('API E2E Suite Test', () => {
 
         expect(response.status).toBe(200)
         expect(response.text).toStrictEqual(styleCssFile.toString())
+
+        server.kill()
+      })
+
+      test('it should return 404 when getting an invalid file from public', async () => {
+        const server = await getTestServer()
+
+        const response = await server.testServer.get('/home/css/invalid.css')
+
+        expect(response.status).toBe(404)
+
+        server.kill()
       })
     })
     
