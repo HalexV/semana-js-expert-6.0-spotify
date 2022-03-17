@@ -1,14 +1,27 @@
-import {jest, expect, describe, test, beforeEach} from '@jest/globals'
+import {jest, expect, describe, test} from '@jest/globals'
 
 import Server from '../../../server/server.js'
 import superTest from 'supertest'
 import portfinder from 'portfinder'
 import {Transform} from 'stream'
 import {setTimeout} from 'timers/promises'
+import fs from 'fs'
+import { join } from 'path'
 
 const getAvailablePort = portfinder.getPortPromise
 
 const RETENTION_DATA_PERIOD = 200
+
+import config from '../../../server/config.js'
+
+const {
+  pages: {
+    homeHTML
+  },
+  dir: {
+    publicDir
+  }
+} = config
 
 describe('API E2E Suite Test', () => {
   
@@ -81,7 +94,20 @@ describe('API E2E Suite Test', () => {
       })
     })
 
-    
+    describe('GET /home', () => {
+      test('it should return 200 and the html document', async () => {
+        const server = await getTestServer()
+
+        const response = await server.testServer.get('/home')
+
+        const homeHTMLDocument = fs.readFileSync(join(publicDir, homeHTML))
+
+        expect(response.status).toBe(200)
+        expect(response.text).toStrictEqual(homeHTMLDocument.toString())
+
+        server.kill()
+      })
+    })
 
     describe('GET /stream', () => {
       test('it should not receive data stream if the process is not playing', async () => {
