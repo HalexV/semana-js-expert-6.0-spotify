@@ -167,6 +167,28 @@ describe('API E2E Suite Test', () => {
         server.kill()
       })
     })
+
+    describe('POST /controller', () => {
+      test('it should return 200 on start command', async () => {
+        {
+          const server = await getTestServer()
+  
+          const expected = {
+            result: 'ok'
+          }
+  
+          const response = await server.
+          testServer.post('/controller')
+          .send({ command: 'start' })
+  
+          expect(response.status).toBe(200)
+          expect(JSON.parse(response.text)).toStrictEqual(expected)
+  
+          server.kill()
+                                                
+        }
+      })
+    })
     
   })
 })
