@@ -208,6 +208,21 @@ describe('API E2E Suite Test', () => {
                                                 
         }
       })
+
+      test('it should return 500 on invalid command', async () => {
+        {
+          const server = await getTestServer()
+  
+          const response = await server.
+          testServer.post('/controller')
+          .send({ command: 'invalid' })
+  
+          expect(response.status).toBe(500)
+  
+          server.kill()
+                                                
+        }
+      })
     })
     
   })

@@ -71,6 +71,9 @@ async function routes(request, response) {
     const data = await once(request, 'data')
     const item = JSON.parse(data)
     const result = await controller.handleCommand(item)
+
+    if(!result) throw new Error('Invalid controller command')
+
     return response.end(JSON.stringify(result))
   }
 
