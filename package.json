@@ -7,10 +7,10 @@
   "scripts": {
     "start": "node server/index.js",
     "live-reload": "nodemon server/index.js",
-    "test": "LOG_DISABLED=true NODE_OPTIONS='--experimental-vm-modules --no-warnings' jest --no-cache",
-    "test:watch": "LOG_DISABLED=true NODE_OPTIONS='--experimental-vm-modules --no-warnings' jest --verbose --no-cache --watchAll",
-    "test:coverage": "LOG_DISABLED=true NODE_OPTIONS='--experimental-vm-modules --no-warnings' jest --no-cache --coverage tests/unit",
-    "test:e2e": "LOG_DISABLED=true NODE_OPTIONS='--experimental-vm-modules --no-warnings' jest --no-cache tests/e2e",
+    "test": "LOG_DISABLED=true NODE_OPTIONS='--experimental-vm-modules --no-warnings' jest --force-exit --detectOpenHandles --no-cache",
+    "test:watch": "LOG_DISABLED=true NODE_OPTIONS='--experimental-vm-modules --no-warnings' jest --force-exit --detectOpenHandles --verbose --no-cache --watchAll",
+    "test:coverage": "LOG_DISABLED=true NODE_OPTIONS='--experimental-vm-modules --no-warnings' jest --force-exit --detectOpenHandles --no-cache --coverage tests/unit",
+    "test:e2e": "LOG_DISABLED=true NODE_OPTIONS='--experimental-vm-modules --no-warnings' jest --force-exit --detectOpenHandles --no-cache tests/e2e",
     
     "live-reload:docker": "docker-compose up --build live-reload",
     "test:docker": "docker-compose up --build test",
