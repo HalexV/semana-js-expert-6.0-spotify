@@ -4,6 +4,7 @@ import config from '../../../server/config.js'
 import { Controller } from '../../../server/controller.js'
 import { handler } from '../../../server/routes.js'
 import TestUtil from '../_util/testUtil.js'
+import events from 'events'
 
 const {
   pages,
@@ -106,6 +107,37 @@ describe('#Routes - test suite for api response', () => {
       'Accept-Ranges': 'bytes'
     })
     expect(pipeSpy).toHaveBeenCalledWith(params.response)
+  })
+
+  test('POST /controller should respond with ok on valid command', async () => {
+    const params = TestUtil.defaultHandleParams()
+    params.request.method = 'POST'
+    params.request.url = '/controller'
+
+    const mockData = JSON.stringify({
+      command: 'valid'
+    })
+    const mockItem = {
+      command: 'valid'
+    }
+    const mockResult = {
+      result: 'ok'
+    }
+
+    const mockResultString = JSON.stringify(mockResult)
+
+    const eventsOnceSpy = jest.spyOn(events, events.once.name).mockResolvedValueOnce(mockData)
+    const jsonParseSpy = jest.spyOn(JSON, JSON.parse.name).mockReturnValueOnce(mockItem)
+    const handleCommandSpy = jest.spyOn(Controller.prototype, Controller.prototype.handleCommand.name).mockResolvedValueOnce(mockResult)
+    const jsonStringifySpy = jest.spyOn(JSON, JSON.stringify.name).mockReturnValueOnce(mockResultString)
+
+    await handler(...params.values())
+
+    expect(eventsOnceSpy).toHaveBeenCalledWith(params.request, 'data')
+    expect(jsonParseSpy).toHaveBeenCalledWith(mockData)
+    expect(handleCommandSpy).toHaveBeenCalledWith(mockItem)
+    expect(jsonStringifySpy).toHaveBeenCalledWith(mockResult)
+    expect(params.response.end).toHaveBeenCalledWith(mockResultString)
   })
 
   test(`GET /index.html - should respond with file stream`, async () => {

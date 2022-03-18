@@ -15,7 +15,7 @@ const {
   }
 } = config
 
-import { once } from 'events'
+import events from 'events'
 
 const controller = new Controller(new Service())
 
@@ -68,7 +68,7 @@ async function routes(request, response) {
   }
 
   if(method === 'POST' && url === '/controller') {
-    const data = await once(request, 'data')
+    const data = await events.once(request, 'data')
     const item = JSON.parse(data)
     const result = await controller.handleCommand(item)
 
