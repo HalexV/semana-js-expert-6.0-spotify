@@ -52,5 +52,22 @@ describe('#Controller', () => {
       expect(loggerInfoSpy).toHaveBeenCalledWith(expectedString)
 
     })
+
+    test('it should call startStreamming on start command', async () => {
+      const sut = new Controller(serviceStub)
+
+      const mockCommand = 'start'
+      const expectedResult = {
+        result: 'ok'
+      }
+
+      jest.spyOn(logger, 'info').mockImplementationOnce(() => {})
+      const startStreammingSpy = jest.spyOn(serviceStub, serviceStub.startStreamming.name)
+
+      const result = await sut.handleCommand({ command: mockCommand })
+
+      expect(startStreammingSpy).toHaveBeenCalled()
+      expect(result).toStrictEqual(expectedResult)
+    })
   })
 })
