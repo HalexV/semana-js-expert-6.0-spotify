@@ -2,6 +2,7 @@ import { describe, test, jest, expect, beforeEach } from '@jest/globals'
 import { Controller } from '../../../server/controller'
 import {logger} from '../../../server/util.js'
 import TestUtil from '../_util/testUtil.js'
+import { Readable } from 'stream'
 
 const serviceStub = {
   getFileStream: () => {},
@@ -119,6 +120,24 @@ describe('#Controller', () => {
       sut.createClientStream()
 
       expect(createClientStreamSpy).toHaveBeenCalled()
+
+    })
+
+    test('it should return a readable stream and a callback', () => {
+      const sut = new Controller(serviceStub)
+
+      const mockId = 'any'
+      const mockClientStream = TestUtil.generateReadableStream(['data'])
+
+      jest.spyOn(serviceStub, serviceStub.createClientStream.name).mockReturnValueOnce({
+        id: mockId,
+        clientStream: mockClientStream
+      })
+      
+      const result = sut.createClientStream()
+
+      expect(result.stream).toBeInstanceOf(Readable)
+      expect(result.onClose).toBeInstanceOf(Function)
 
     })
   })
