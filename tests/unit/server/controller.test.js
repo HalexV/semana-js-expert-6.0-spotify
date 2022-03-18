@@ -86,5 +86,18 @@ describe('#Controller', () => {
       expect(stopStreammingSpy).toHaveBeenCalled()
       expect(result).toStrictEqual(expectedResult)
     })
+
+    test('it should return undefined on invalid command', async () => {
+      const sut = new Controller(serviceStub)
+
+      const mockCommand = 'invalid'
+      const expectedResult = undefined
+
+      jest.spyOn(logger, 'info').mockImplementationOnce(() => {})
+
+      const result = await sut.handleCommand({ command: mockCommand })
+
+      expect(result).toStrictEqual(expectedResult)
+    })
   })
 })
