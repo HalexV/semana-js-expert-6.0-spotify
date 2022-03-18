@@ -79,6 +79,35 @@ describe('#Routes - test suite for api response', () => {
     expect(pipeSpy).toHaveBeenCalledWith(params.response)
   })
 
+  test('GET /stream should return a file stream', async () => {
+    const params = TestUtil.defaultHandleParams()
+    params.request.method = 'GET'
+    params.request.url = '/stream'
+
+    const mockOnClose = () => {}
+    const mockFileStream = TestUtil.generateReadableStream(['data'])
+
+    const createClientStreamSpy = jest.spyOn(
+      Controller.prototype,
+      Controller.prototype.createClientStream.name
+    ).mockReturnValueOnce({
+      stream: mockFileStream,
+      onClose: mockOnClose
+    })
+
+    const pipeSpy = jest.spyOn(mockFileStream, 'pipe').mockReturnValueOnce()
+
+    await handler(...params.values())
+
+    expect(createClientStreamSpy).toHaveBeenCalled()
+    expect(params.request.once).toHaveBeenCalledWith('close', mockOnClose)
+    expect(params.response.writeHead).toHaveBeenCalledWith(200, {
+      'Content-Type': 'audio/mpeg',
+      'Accept-Ranges': 'bytes'
+    })
+    expect(pipeSpy).toHaveBeenCalledWith(params.response)
+  })
+
   test(`GET /index.html - should respond with file stream`, async () => {
     const params = TestUtil.defaultHandleParams()
     const filename = '/index.html'

@@ -33,6 +33,7 @@ export default class TestUtil {
         headers: {},
         method: '',
         url: '',
+        once: jest.fn()
       }),
       response: Object.assign(responseStream, {
         writeHead: jest.fn(),
