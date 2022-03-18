@@ -69,5 +69,22 @@ describe('#Controller', () => {
       expect(startStreammingSpy).toHaveBeenCalled()
       expect(result).toStrictEqual(expectedResult)
     })
+
+    test('it should call stopStreamming on stop command', async () => {
+      const sut = new Controller(serviceStub)
+
+      const mockCommand = 'stop'
+      const expectedResult = {
+        result: 'ok'
+      }
+
+      jest.spyOn(logger, 'info').mockImplementationOnce(() => {})
+      const stopStreammingSpy = jest.spyOn(serviceStub, serviceStub.stopStreamming.name)
+
+      const result = await sut.handleCommand({ command: mockCommand })
+
+      expect(stopStreammingSpy).toHaveBeenCalled()
+      expect(result).toStrictEqual(expectedResult)
+    })
   })
 })
