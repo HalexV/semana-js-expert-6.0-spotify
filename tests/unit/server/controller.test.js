@@ -1,11 +1,14 @@
 import { describe, test, jest, expect, beforeEach } from '@jest/globals'
 import { Controller } from '../../../server/controller'
 import {logger} from '../../../server/util.js'
+import TestUtil from '../_util/testUtil.js'
 
 const serviceStub = {
   getFileStream: () => {},
   startStreamming: () => {},
-  stopStreamming: () => {}
+  stopStreamming: () => {},
+  createClientStream: () => {},
+  removeClientStream: () => {}
 }
 
 describe('#Controller', () => {
@@ -98,6 +101,25 @@ describe('#Controller', () => {
       const result = await sut.handleCommand({ command: mockCommand })
 
       expect(result).toStrictEqual(expectedResult)
+    })
+  })
+
+  describe('createClientStream', () => {
+    test('it should call createClientStream', () => {
+      const sut = new Controller(serviceStub)
+
+      const mockId = 'any'
+      const mockClientStream = TestUtil.generateReadableStream(['data'])
+
+      const createClientStreamSpy = jest.spyOn(serviceStub, serviceStub.createClientStream.name).mockReturnValueOnce({
+        id: mockId,
+        clientStream: mockClientStream
+      })
+      
+      sut.createClientStream()
+
+      expect(createClientStreamSpy).toHaveBeenCalled()
+
     })
   })
 })
