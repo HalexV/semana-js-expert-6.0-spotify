@@ -1,8 +1,11 @@
 import { describe, test, jest, expect, beforeEach } from '@jest/globals'
 import { Controller } from '../../../server/controller'
+import {logger} from '../../../server/util.js'
 
 const serviceStub = {
-  getFileStream: () => {}
+  getFileStream: () => {},
+  startStreamming: () => {},
+  stopStreamming: () => {}
 }
 
 describe('#Controller', () => {
@@ -32,6 +35,22 @@ describe('#Controller', () => {
       const result = sut.getFileStream(expectedFileName)
   
       await expect(result).rejects.toThrowError()
+    })
+  })
+
+  describe('handleCommand', () => {
+    test('it should call logger.info', async () => {
+      const sut = new Controller(serviceStub)
+
+      const mockCommand = 'any'
+      const expectedString = `command received: ${mockCommand}`
+
+      const loggerInfoSpy = jest.spyOn(logger, 'info').mockImplementationOnce(() => {})
+
+      await sut.handleCommand({ command: mockCommand })
+
+      expect(loggerInfoSpy).toHaveBeenCalledWith(expectedString)
+
     })
   })
 })
