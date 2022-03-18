@@ -140,6 +140,21 @@ describe('#Routes - test suite for api response', () => {
     expect(params.response.end).toHaveBeenCalledWith(mockResultString)
   })
 
+  test('POST /controller should respond with 500 on invalid command', async () => {
+    const params = TestUtil.defaultHandleParams()
+    params.request.method = 'POST'
+    params.request.url = '/controller'
+
+    jest.spyOn(events, events.once.name).mockResolvedValueOnce()
+    jest.spyOn(JSON, JSON.parse.name).mockReturnValueOnce()
+    jest.spyOn(Controller.prototype, Controller.prototype.handleCommand.name).mockResolvedValueOnce(undefined)
+
+    await handler(...params.values())
+
+    expect(params.response.writeHead).toHaveBeenCalledWith(500)
+    expect(params.response.end).toHaveBeenCalled()
+  })
+
   test(`GET /index.html - should respond with file stream`, async () => {
     const params = TestUtil.defaultHandleParams()
     const filename = '/index.html'
