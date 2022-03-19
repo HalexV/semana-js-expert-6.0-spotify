@@ -9,6 +9,7 @@ import childProcess from 'child_process'
 import {Service} from '../../../server/service.js'
 import config from '../../../server/config.js'
 import TestUtil from '../_util/testUtil.js'
+import {logger} from '../../../server/util.js'
 
 const {
   dir: {
@@ -96,6 +97,38 @@ describe('#Service', () => {
 
       expect(result).toStrictEqual('128000')
       expect(_executeSoxCommandMock).toHaveBeenCalledWith(mockArgs)
+
+    })
+
+    test('it should return the string 128000 on error', async () => {
+      const sut = new Service()
+
+      const mockSong = 'any'
+      const mockArgs = [
+        '--i',
+        '-B',
+        mockSong
+      ]
+
+      const expectedString = 'deu ruim no bitrate error'
+
+      const stderrMock = TestUtil.generateReadableStream(['error'])
+      const stdoutMock = TestUtil.generateReadableStream(['128k'])
+
+      const _executeSoxCommandMock = jest.fn().mockReturnValueOnce({
+        stderr: stderrMock,
+        stdout: stdoutMock
+      })
+
+      const errorSpy = jest.spyOn(logger, 'error').mockImplementationOnce(() => {})
+
+      sut._executeSoxCommand = _executeSoxCommandMock
+
+      const result = await sut.getBitRate(mockSong)
+
+      expect(result).toStrictEqual('128000')
+      expect(_executeSoxCommandMock).toHaveBeenCalledWith(mockArgs)
+      expect(errorSpy).toHaveBeenCalledWith(expectedString)
 
     })
   })
