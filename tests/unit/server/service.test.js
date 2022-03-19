@@ -41,6 +41,20 @@ describe('#Service', () => {
     })
   })
 
+  describe('removeClientStream', () => {
+    test('it should call clientStreams.delete with id', () => {
+      const sut = new Service()
+
+      const mockId = 'any'
+
+      const deleteSpy = jest.spyOn(sut.clientStreams, sut.clientStreams.delete.name).mockImplementationOnce(() => {})
+
+      sut.removeClientStream(mockId)
+
+      expect(deleteSpy).toHaveBeenCalledWith(mockId)
+    })
+  })
+
   describe('createFileStream', () => {
     test('it should call createReadStream with filename', () => {
       const sut = new Service()
