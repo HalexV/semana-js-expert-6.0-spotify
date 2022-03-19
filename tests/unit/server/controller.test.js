@@ -140,5 +140,31 @@ describe('#Controller', () => {
       expect(result.onClose).toBeInstanceOf(Function)
 
     })
+
+    test('onClose should call logger.info and removeClientStream', () => {
+      const sut = new Controller(serviceStub)
+
+      const mockId = 'any'
+      
+      const expectedString = `closing connection of ${mockId}`
+
+      jest.spyOn(serviceStub, serviceStub.createClientStream.name).mockReturnValueOnce({
+        id: mockId,
+        clientStream: 'whatever'
+      })
+
+      const infoSpy = jest.spyOn(logger, 'info').mockImplementationOnce(() => {})
+
+      const removeClientStreamSpy = jest.spyOn(serviceStub, serviceStub.removeClientStream.name)
+      
+      
+      const result = sut.createClientStream()
+
+      result.onClose()
+
+      expect(infoSpy).toHaveBeenCalledWith(expectedString)
+      expect(removeClientStreamSpy).toHaveBeenCalledWith(mockId)
+
+    })
   })
 })
