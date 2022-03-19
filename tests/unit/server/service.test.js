@@ -8,6 +8,7 @@ import childProcess from 'child_process'
 
 import {Service} from '../../../server/service.js'
 import config from '../../../server/config.js'
+import TestUtil from '../_util/testUtil.js'
 
 const {
   dir: {
@@ -67,6 +68,35 @@ describe('#Service', () => {
       sut._executeSoxCommand(mockArgs)
 
       expect(spawSpy).toHaveBeenCalledWith('sox', mockArgs)
+    })
+  })
+
+  describe('getBitRate', () => {
+    test('it should return the string 128000', async () => {
+      const sut = new Service()
+
+      const mockSong = 'any'
+      const mockArgs = [
+        '--i',
+        '-B',
+        mockSong
+      ]
+
+      const stderrMock = TestUtil.generateReadableStream()
+      const stdoutMock = TestUtil.generateReadableStream(['128k'])
+
+      const _executeSoxCommandMock = jest.fn().mockReturnValueOnce({
+        stderr: stderrMock,
+        stdout: stdoutMock
+      })
+
+      sut._executeSoxCommand = _executeSoxCommandMock
+
+      const result = await sut.getBitRate(mockSong)
+
+      expect(result).toStrictEqual('128000')
+      expect(_executeSoxCommandMock).toHaveBeenCalledWith(mockArgs)
+
     })
   })
 

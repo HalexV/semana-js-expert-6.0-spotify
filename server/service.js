@@ -8,7 +8,7 @@ import Throttle from 'throttle'
 import childProcess from 'child_process'
 import {logger} from './util.js'
 import streamsPromises from 'stream/promises'
-import { once } from 'events'
+import events from 'events'
 
 const {
   dir: {
@@ -64,8 +64,8 @@ export class Service {
       } = this._executeSoxCommand(args)
 
       await Promise.all([
-        once(stdout, 'readable'),
-        once(stderr, 'readable')
+        events.once(stdout, 'readable'),
+        events.once(stderr, 'readable')
       ])
 
       const [success, error] = [stdout, stderr].map(stream => stream.read())
