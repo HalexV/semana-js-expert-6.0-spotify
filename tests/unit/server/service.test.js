@@ -4,6 +4,7 @@ import fsPromises from 'fs/promises'
 import path from 'path'
 import crypto from 'crypto'
 import stream, { PassThrough } from 'stream'
+import childProcess from 'child_process'
 
 import {Service} from '../../../server/service.js'
 import config from '../../../server/config.js'
@@ -52,6 +53,20 @@ describe('#Service', () => {
       sut.removeClientStream(mockId)
 
       expect(deleteSpy).toHaveBeenCalledWith(mockId)
+    })
+  })
+
+  describe('_executeSoxCommand', () => {
+    test('it should call spawn with correct arguments', () => {
+      const sut = new Service()
+
+      const mockArgs = ['any', 'any', 'any']
+
+      const spawSpy = jest.spyOn(childProcess, childProcess.spawn.name).mockImplementationOnce(()=>{})
+
+      sut._executeSoxCommand(mockArgs)
+
+      expect(spawSpy).toHaveBeenCalledWith('sox', mockArgs)
     })
   })
 
