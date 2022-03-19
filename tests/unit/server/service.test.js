@@ -83,7 +83,7 @@ describe('#Service', () => {
         mockSong
       ]
 
-      const stderrMock = TestUtil.generateReadableStream()
+      const stderrMock = TestUtil.generateReadableStream([])
       const stdoutMock = TestUtil.generateReadableStream(['128k'])
 
       const _executeSoxCommandMock = jest.fn().mockReturnValueOnce({

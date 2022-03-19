@@ -63,6 +63,7 @@ export class Service {
         // stdin // enviar dados como stream
       } = this._executeSoxCommand(args)
 
+      
       await Promise.all([
         events.once(stdout, 'readable'),
         events.once(stderr, 'readable')
@@ -71,7 +72,6 @@ export class Service {
       const [success, error] = [stdout, stderr].map(stream => stream.read())
 
       if(error) return await Promise.reject(error)
-
 
       return success
       .toString()
