@@ -1,8 +1,8 @@
 import fs from 'fs'
 import fsPromises from 'fs/promises'
-import { randomUUID } from 'crypto'
+import crypto from 'crypto'
 import config from './config.js'
-import { PassThrough, Writable } from 'stream'
+import stream, { Writable } from 'stream'
 import path from 'path'
 import Throttle from 'throttle'
 import childProcess from 'child_process'
@@ -31,8 +31,8 @@ export class Service {
   }
 
   createClientStream() {
-    const id = randomUUID()
-    const clientStream = new PassThrough()
+    const id = crypto.randomUUID()
+    const clientStream = new stream.PassThrough()
     this.clientStreams.set(id, clientStream)
 
     return {

@@ -2,6 +2,8 @@ import {describe, test, jest, expect, beforeEach} from '@jest/globals'
 import fs from 'fs'
 import fsPromises from 'fs/promises'
 import path from 'path'
+import crypto from 'crypto'
+import stream, { PassThrough } from 'stream'
 
 import {Service} from '../../../server/service.js'
 import config from '../../../server/config.js'
@@ -16,6 +18,27 @@ describe('#Service', () => {
   
   beforeEach(() => {
     jest.restoreAllMocks()
+  })
+
+  describe('createClientStream', () => {
+    test('it should return an id and a stream', () => {
+      const sut = new Service()
+
+      const mockId = 'any'
+      const mockPassThrough = new stream.PassThrough()
+      
+      const randomUUIDSpy = jest.spyOn(crypto, crypto.randomUUID.name).mockReturnValueOnce(mockId)
+      const passThroughSpy = jest.spyOn(stream, stream.PassThrough.name).mockImplementationOnce(function () {return mockPassThrough})
+      const setSpy = jest.spyOn(sut.clientStreams, sut.clientStreams.set.name)
+
+      const result = sut.createClientStream()
+
+      expect(randomUUIDSpy).toHaveBeenCalled()
+      expect(passThroughSpy).toHaveBeenCalled()
+      expect(setSpy).toHaveBeenCalledWith(mockId, mockPassThrough)
+      expect(result.id).toStrictEqual(mockId)
+      expect(result.clientStream).toBeInstanceOf(PassThrough)
+    })
   })
 
   describe('createFileStream', () => {
