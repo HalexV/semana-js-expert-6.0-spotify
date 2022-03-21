@@ -3,7 +3,7 @@ import fs from 'fs'
 import fsPromises from 'fs/promises'
 import path from 'path'
 import crypto from 'crypto'
-import stream, { PassThrough } from 'stream'
+import stream, { PassThrough, Writable } from 'stream'
 import childProcess from 'child_process'
 
 import {Service} from '../../../server/service.js'
@@ -130,6 +130,16 @@ describe('#Service', () => {
       expect(_executeSoxCommandMock).toHaveBeenCalledWith(mockArgs)
       expect(errorSpy).toHaveBeenCalledWith(expectedString)
 
+    })
+  })
+
+  describe('broadCast', () => {
+    test('it should return a writable', () => {
+      const sut = new Service()
+
+      const result = sut.broadCast()
+
+      expect(result).toBeInstanceOf(Writable)
     })
   })
 
