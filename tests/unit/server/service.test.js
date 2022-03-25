@@ -171,9 +171,34 @@ describe('#Service', () => {
       
     })
 
-    test.todo('it should call stream.write when stream.writableEnded is false')
+    test('it should call stream.write with chunk when stream.writableEnded is false', done => {
+      const sut = new Service()
 
-    test.todo('it should call the callback')
+      const mockId = 'any'
+      let expectedChunk;
+      const mockStream = TestUtil.generateWritableStream((chunk) => {
+        expectedChunk = chunk.toString()
+      })
+      const callbackSpy = jest.fn().mockImplementationOnce(() => {
+        try {
+          expect(callbackSpy).toHaveBeenCalled()
+          done()
+        } catch (error) {
+          done(error)
+        }
+      })
+
+      const writeSpy = jest.spyOn(mockStream, 'write')
+
+      sut.clientStreams.set(mockId, mockStream)
+
+      const writableStream = sut.broadCast()
+
+      writableStream.write('any','utf-8',callbackSpy)
+
+      expect(writeSpy).toHaveBeenCalled()
+      expect(expectedChunk).toStrictEqual('any')
+    })
   })
 
   describe('createFileStream', () => {
