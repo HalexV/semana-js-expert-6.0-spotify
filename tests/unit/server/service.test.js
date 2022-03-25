@@ -5,6 +5,8 @@ import path from 'path'
 import crypto from 'crypto'
 import stream, { PassThrough, Writable } from 'stream'
 import childProcess from 'child_process'
+import Throttle from 'throttle'
+import streamsPromises from 'stream/promises'
 
 import {Service} from '../../../server/service.js'
 import config from '../../../server/config.js'
@@ -198,6 +200,30 @@ describe('#Service', () => {
 
       expect(writeSpy).toHaveBeenCalled()
       expect(expectedChunk).toStrictEqual('any')
+    })
+  })
+
+  describe('startStreamming', () => {
+    test('it should call logger.info with the string', async () => {
+      const sut = new Service()
+
+      const mockCurrentSong = 'any'
+      const expectedString = `starting with ${mockCurrentSong}`
+
+      sut.currentSong = mockCurrentSong
+
+      const infoSpy = jest.spyOn(logger, 'info').mockImplementationOnce(() => {})
+
+      sut.getBitRate = jest.fn().mockResolvedValueOnce(100000)
+
+      sut.createFileStream = () => {}
+      sut.broadCast = () => {}
+
+      jest.spyOn(streamsPromises, streamsPromises.pipeline.name).mockImplementationOnce(() => {})
+
+      await sut.startStreamming()
+
+      expect(infoSpy).toBeCalledWith(expectedString)
     })
   })
 
