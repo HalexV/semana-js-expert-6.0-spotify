@@ -141,6 +141,39 @@ describe('#Service', () => {
 
       expect(result).toBeInstanceOf(Writable)
     })
+
+    test('it should call this.clientStreams.delete when stream.writableEnded is true', done => {
+      const sut = new Service()
+
+      const mockId = 'any'
+      const mockStream = TestUtil.generateWritableStream()
+      const callbackSpy = jest.fn().mockImplementationOnce(() => {
+        try {
+          expect(callbackSpy).toHaveBeenCalled()
+          done()
+        } catch (error) {
+          done(error)
+        }
+      })
+
+      mockStream.end()
+
+      sut.clientStreams.set(mockId, mockStream)
+
+      const deleteSpy = jest.spyOn(sut.clientStreams, sut.clientStreams.delete.name)
+
+      const writableStream = sut.broadCast()
+
+      writableStream.write('any','utf-8',callbackSpy)
+
+      expect(deleteSpy).toHaveBeenCalledTimes(1)
+      expect(deleteSpy).toHaveBeenCalledWith(mockId)
+      
+    })
+
+    test.todo('it should call stream.write when stream.writableEnded is false')
+
+    test.todo('it should call the callback')
   })
 
   describe('createFileStream', () => {
