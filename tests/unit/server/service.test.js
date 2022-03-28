@@ -225,6 +225,27 @@ describe('#Service', () => {
 
       expect(infoSpy).toBeCalledWith(expectedString)
     })
+
+    test('it should call this.getBitRate with this.currentSong', async () => {
+      const sut = new Service()
+
+      const mockCurrentSong = 'any'
+
+      sut.currentSong = mockCurrentSong
+
+      jest.spyOn(logger, 'info').mockImplementationOnce(() => {})
+
+      const getBitRateSpy = sut.getBitRate = jest.fn().mockResolvedValueOnce(100000)
+
+      sut.createFileStream = () => {}
+      sut.broadCast = () => {}
+
+      jest.spyOn(streamsPromises, streamsPromises.pipeline.name).mockImplementationOnce(() => {})
+
+      await sut.startStreamming()
+
+      expect(getBitRateSpy).toBeCalledWith(mockCurrentSong)
+    })
   })
 
   describe('createFileStream', () => {
