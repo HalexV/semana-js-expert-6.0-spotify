@@ -246,6 +246,27 @@ describe('#Service', () => {
 
       expect(getBitRateSpy).toBeCalledWith(mockCurrentSong)
     })
+
+    test('this.throttleTransform should be a Throttle', async () => {
+      const sut = new Service()
+
+      const mockCurrentSong = 'any'
+
+      sut.currentSong = mockCurrentSong
+
+      jest.spyOn(logger, 'info').mockImplementationOnce(() => {})
+
+      sut.getBitRate = jest.fn().mockResolvedValueOnce(100000)
+
+      sut.createFileStream = () => {}
+      sut.broadCast = () => {}
+
+      jest.spyOn(streamsPromises, streamsPromises.pipeline.name).mockImplementationOnce(() => {})
+
+      await sut.startStreamming()
+
+      expect(sut.throttleTransform).toBeInstanceOf(Throttle)
+    })
   })
 
   describe('createFileStream', () => {
