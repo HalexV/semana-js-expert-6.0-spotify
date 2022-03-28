@@ -322,6 +322,20 @@ describe('#Service', () => {
     })
   })
 
+  describe('stopStreamming', () => {
+    test('it should call this.throttleTransform.end', () => {
+      const sut = new Service()
+
+      sut.throttleTransform = {
+        end: jest.fn()
+      }
+
+      sut.stopStreamming()
+
+      expect(sut.throttleTransform.end).toHaveBeenCalled()
+    })
+  })
+
   describe('createFileStream', () => {
     test('it should call createReadStream with filename', () => {
       const sut = new Service()
