@@ -334,6 +334,14 @@ describe('#Service', () => {
 
       expect(sut.throttleTransform.end).toHaveBeenCalled()
     })
+
+    test('it should return undefined when this.throttleTransform is undefined', () => {
+      const sut = new Service()
+
+      const result = sut.stopStreamming()
+
+      expect(result).toBe(undefined)
+    })
   })
 
   describe('createFileStream', () => {
