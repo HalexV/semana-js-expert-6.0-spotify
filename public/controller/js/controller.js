@@ -10,7 +10,14 @@ export default class Controller {
     return controller
   }
 
+  async commandReceived(text) {
+    return this.service.makeRequest({
+      command: text
+    })
+  }
+
   onLoad() {
+    this.view.configureOnBtnClick(this.commandReceived.bind(this))
     this.view.onLoad()
   }
 }
