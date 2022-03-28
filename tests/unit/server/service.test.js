@@ -288,6 +288,38 @@ describe('#Service', () => {
 
       expect(sut.createFileStream).toHaveBeenCalledWith(mockCurrentSong)
     })
+
+    test('it should call pipeline with the correct parameters', async () => {
+      const sut = new Service()
+
+      const mockCurrentSong = 'any'
+      const mockSongReadable = TestUtil.generateReadableStream(['any'])
+      const mockBroadCast = TestUtil.generateWritableStream()
+      let pipelineArguments;
+
+      sut.currentSong = mockCurrentSong
+
+      jest.spyOn(logger, 'info').mockImplementationOnce(() => {})
+
+      sut.getBitRate = jest.fn().mockResolvedValueOnce(100000)
+
+      sut.createFileStream = () => mockSongReadable
+      sut.broadCast = () => mockBroadCast
+
+      jest.spyOn(streamsPromises, streamsPromises.pipeline.name).mockImplementationOnce(function () {
+        pipelineArguments = {
+          mockSongReadable: arguments['0'],
+          mockBroadCast: arguments['2']
+        }
+      })
+
+      await sut.startStreamming()
+
+      expect(pipelineArguments).toMatchObject({
+        mockSongReadable,
+        mockBroadCast
+      })
+    })
   })
 
   describe('createFileStream', () => {
