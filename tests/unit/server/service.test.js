@@ -267,6 +267,27 @@ describe('#Service', () => {
 
       expect(sut.throttleTransform).toBeInstanceOf(Throttle)
     })
+
+    test('it should call this.createFileStream with this.currentSong', async () => {
+      const sut = new Service()
+
+      const mockCurrentSong = 'any'
+
+      sut.currentSong = mockCurrentSong
+
+      jest.spyOn(logger, 'info').mockImplementationOnce(() => {})
+
+      sut.getBitRate = jest.fn().mockResolvedValueOnce(100000)
+
+      sut.createFileStream = jest.fn()
+      sut.broadCast = () => {}
+
+      jest.spyOn(streamsPromises, streamsPromises.pipeline.name).mockImplementationOnce(() => {})
+
+      await sut.startStreamming()
+
+      expect(sut.createFileStream).toHaveBeenCalledWith(mockCurrentSong)
+    })
   })
 
   describe('createFileStream', () => {
