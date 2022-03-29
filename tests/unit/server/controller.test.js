@@ -97,6 +97,29 @@ describe('#Controller', () => {
       expect(result).toStrictEqual(expectedResult)
     })
 
+    test('it should return ok on a song valid command', async () => {
+      const sut = new Controller(serviceStub)
+
+      const mockCommand = 'Valid_fx'
+      const mockCmd = mockCommand.toLowerCase()
+      const mockChosenFx = 'fx_chosen'
+      const expectedResult = {
+        result: 'ok'
+      }
+
+      jest.spyOn(logger, 'info').mockImplementationOnce(() => {})
+      
+      const readFxByNameSpy = jest.spyOn(serviceStub, serviceStub.readFxByName.name).mockResolvedValueOnce(mockChosenFx)
+
+      const appendFxStreamSpy = jest.spyOn(serviceStub, serviceStub.appendFxStream.name).mockResolvedValueOnce()
+
+      const result = await sut.handleCommand({ command: mockCommand })
+
+      expect(readFxByNameSpy).toHaveBeenCalledWith(mockCmd)
+      expect(appendFxStreamSpy).toHaveBeenCalledWith(mockChosenFx)
+      expect(result).toStrictEqual(expectedResult)
+    })
+
     test('it should throw on invalid command', async () => {
       const sut = new Controller(serviceStub)
 
