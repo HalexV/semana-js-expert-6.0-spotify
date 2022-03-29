@@ -9,7 +9,9 @@ const serviceStub = {
   startStreamming: () => {},
   stopStreamming: () => {},
   createClientStream: () => {},
-  removeClientStream: () => {}
+  removeClientStream: () => {},
+  readFxByName: () => {},
+  appendFxStream: () => {},
 }
 
 describe('#Controller', () => {
@@ -47,13 +49,17 @@ describe('#Controller', () => {
       const sut = new Controller(serviceStub)
 
       const mockCommand = 'any'
-      const expectedString = `command received: ${mockCommand}`
+      const mockChosenFx = 'whatever'
+      const expectedString1 = `command received: ${mockCommand}`
+      const expectedString2 = `added fx to service: ${mockChosenFx}`
 
       const loggerInfoSpy = jest.spyOn(logger, 'info').mockImplementationOnce(() => {})
+      jest.spyOn(serviceStub, serviceStub.readFxByName.name).mockResolvedValueOnce(mockChosenFx)
 
       await sut.handleCommand({ command: mockCommand })
 
-      expect(loggerInfoSpy).toHaveBeenCalledWith(expectedString)
+      expect(loggerInfoSpy).toHaveBeenNthCalledWith(1,expectedString1)
+      expect(loggerInfoSpy).toHaveBeenNthCalledWith(2,expectedString2)
 
     })
 
