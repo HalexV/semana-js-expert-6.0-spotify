@@ -15,7 +15,8 @@ import {logger} from '../../../server/util.js'
 
 const {
   dir: {
-    publicDir
+    publicDir,
+    fxDir
   }
 } = config
 
@@ -518,6 +519,20 @@ describe('#Service', () => {
       const result = sut.getFileStream('any')
 
       await expect(result).rejects.toThrowError()
+    })
+  })
+
+  describe('readFxByName', () => {
+    test('it should call fsPromises.readdir with fxDir', async () => {
+      const sut = new Service()
+      const fxName = 'any'
+      const mockSongs = ['Any', 'Whatever']
+      const readdirSpy = jest.spyOn(fsPromises, fsPromises.readdir.name).mockResolvedValueOnce(mockSongs)
+      jest.spyOn(path, path.join.name).mockReturnValueOnce()
+
+      await sut.readFxByName(fxName)
+
+      expect(readdirSpy).toHaveBeenCalledWith(fxDir)
     })
   })
 })
