@@ -153,7 +153,7 @@ export class Service {
   async readFxByName(fxName) {
     const songs = await fsPromises.readdir(fxDir)
     const chosenSong = songs.find(filename => filename.toLowerCase().includes(fxName))
-    if(!chosenSong) return Promise.reject(`the song ${fxName} wasn't found!`)
+    if(!chosenSong) return Promise.reject(new Error(`the song ${fxName} wasn't found!`))
 
     return path.join(fxDir, chosenSong)
   }
