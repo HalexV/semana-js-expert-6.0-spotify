@@ -97,17 +97,17 @@ describe('#Controller', () => {
       expect(result).toStrictEqual(expectedResult)
     })
 
-    test('it should return undefined on invalid command', async () => {
+    test('it should throw on invalid command', async () => {
       const sut = new Controller(serviceStub)
 
       const mockCommand = 'invalid'
-      const expectedResult = undefined
 
       jest.spyOn(logger, 'info').mockImplementationOnce(() => {})
+      jest.spyOn(serviceStub, serviceStub.readFxByName.name).mockRejectedValueOnce(new Error())
 
-      const result = await sut.handleCommand({ command: mockCommand })
+      const result = sut.handleCommand({ command: mockCommand })
 
-      expect(result).toStrictEqual(expectedResult)
+      await expect(result).rejects.toThrow()
     })
   })
 
