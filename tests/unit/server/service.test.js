@@ -547,5 +547,17 @@ describe('#Service', () => {
 
       expect(joinSpy).toHaveBeenCalledWith(fxDir, mockChosenSong)
     })
+
+    test('it should throw when chosenSong is undefined', async () => {
+      const sut = new Service()
+      const fxName = 'invalid'
+      const mockSongs = ['Any', 'Whatever']
+      jest.spyOn(fsPromises, fsPromises.readdir.name).mockResolvedValueOnce(mockSongs)
+      jest.spyOn(path, path.join.name).mockReturnValueOnce()
+
+      const result = sut.readFxByName(fxName)
+
+      await expect(result).rejects.toThrowError(`the song ${fxName} wasn't found!`)
+    })
   })
 })
