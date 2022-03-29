@@ -534,5 +534,18 @@ describe('#Service', () => {
 
       expect(readdirSpy).toHaveBeenCalledWith(fxDir)
     })
+
+    test('it should call path.join with fxDir and chosenSong', async () => {
+      const sut = new Service()
+      const fxName = 'any'
+      const mockSongs = ['Any', 'Whatever']
+      const mockChosenSong = 'Any'
+      jest.spyOn(fsPromises, fsPromises.readdir.name).mockResolvedValueOnce(mockSongs)
+      const joinSpy = jest.spyOn(path, path.join.name).mockReturnValueOnce()
+
+      await sut.readFxByName(fxName)
+
+      expect(joinSpy).toHaveBeenCalledWith(fxDir, mockChosenSong)
+    })
   })
 })
