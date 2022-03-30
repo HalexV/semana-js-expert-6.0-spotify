@@ -80,4 +80,15 @@ describe('#View - test suite for presentation layer', () => {
 
     expect(changeCommandBtnsVisibilitySpy).toHaveBeenCalled()
   })
+
+  describe('configureOnBtnClick', () => {
+    test('it should assign the function to this.onBtnClick', () => {
+      const sut = new View()
+      const mockFunction = () => {}
+
+      sut.configureOnBtnClick(mockFunction)
+
+      expect(sut.onBtnClick).toBe(mockFunction)
+    })
+  })
 })
