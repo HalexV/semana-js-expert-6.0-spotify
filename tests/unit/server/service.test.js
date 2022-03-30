@@ -638,6 +638,26 @@ describe('#Service', () => {
   })
 
   describe('mergeAudioStreams', () => {
+    test('it should return a PassThrough', () => {
+      const sut = new Service()
+      const mockSong = 'any_song'
+      const mockReadable = TestUtil.generateReadableStream(['any'])
+
+      const mockStdout = TestUtil.generateReadableStream(['any'])
+      const mockStdin = TestUtil.generateWritableStream()
+
+      jest.spyOn(sut, sut._executeSoxCommand.name).mockReturnValueOnce({
+        stdout: mockStdout,
+        stdin: mockStdin
+      })
+
+      jest.spyOn(streamsPromises, streamsPromises.pipeline.name).mockImplementation(() => {})
+
+      const result = sut.mergeAudioStreams(mockSong, mockReadable)
+
+      expect(result).toBeInstanceOf(PassThrough)
+    })
+    
     test('it should call this._executeSoxCommand with the correct args', () => {
       const sut = new Service()
       const mockSong = 'any_song'
