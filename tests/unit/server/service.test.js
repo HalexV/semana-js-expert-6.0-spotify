@@ -592,5 +592,43 @@ describe('#Service', () => {
       expect(throttleTransformPauseSpy).toHaveBeenCalled()
       expect(currentReadableUnpipeSpy).toHaveBeenCalledWith(sut.throttleTransform)
     })
+
+    test('it should call unpipe on emit unpipe', () => {
+      const sut = new Service()
+
+      const mockFx = 'any'
+      const passThrough = PassThrough()
+
+      const pipelineSpy = jest.spyOn(streamsPromises, streamsPromises.pipeline.name).mockImplementation(() => {})
+
+      sut.broadCast = () => TestUtil.generateWritableStream()
+
+      sut.throttleTransform = new Throttle(100000)
+      sut.currentReadable = TestUtil.generateReadableStream(['data'])
+
+      jest.spyOn(sut.throttleTransform, 'pause').mockImplementationOnce(() => {})
+
+      jest.spyOn(sut.currentReadable, 'unpipe').mockImplementationOnce(() => {})
+
+      const mergeAudioStreamsSpy = jest.spyOn(sut, sut.mergeAudioStreams.name).mockReturnValueOnce(passThrough)
+
+      const removeListenerSpy = jest.spyOn(passThrough, 'removeListener').mockImplementationOnce(() => {})
+
+      sut.appendFxStream(mockFx)
+
+      const currentReadable = sut.currentReadable
+
+      sut.throttleTransform.emit('unpipe')
+
+      const [pipelineArg1, pipelineArg2] = pipelineSpy.mock.calls[1]
+      const [mockRemoveListenerArg1, mockRemoveListenerArg2] = removeListenerSpy.mock.calls[0]
+
+      expect(mergeAudioStreamsSpy).toHaveBeenCalledWith(mockFx, currentReadable)
+      expect(mockRemoveListenerArg1).toStrictEqual('unpipe')
+      expect(mockRemoveListenerArg2).toBeInstanceOf(Function)
+      expect(pipelineArg1).toBeInstanceOf(PassThrough)
+      expect(pipelineArg2).toBeInstanceOf(Throttle)
+      
+    })
   })
 })
