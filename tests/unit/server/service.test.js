@@ -17,6 +17,11 @@ const {
   dir: {
     publicDir,
     fxDir
+  },
+  constants: {
+    audioMediaType,
+    fxVolume,
+    songVolume
   }
 } = config
 
@@ -629,6 +634,38 @@ describe('#Service', () => {
       expect(pipelineArg1).toBeInstanceOf(PassThrough)
       expect(pipelineArg2).toBeInstanceOf(Throttle)
       
+    })
+  })
+
+  describe('mergeAudioStreams', () => {
+    test('it should call this._executeSoxCommand with the correct args', () => {
+      const sut = new Service()
+      const mockSong = 'any_song'
+      const mockReadable = TestUtil.generateReadableStream(['any'])
+      const args = [
+        '-t', audioMediaType,
+        '-v', songVolume,
+        '-m', '-',
+        '-t', audioMediaType,
+        '-v', fxVolume,
+        mockSong,
+        '-t', audioMediaType,
+        '-'
+      ]
+
+      const mockStdout = TestUtil.generateReadableStream(['any'])
+      const mockStdin = TestUtil.generateWritableStream()
+
+      const executeSoxCommandSpy = jest.spyOn(sut, sut._executeSoxCommand.name).mockReturnValueOnce({
+        stdout: mockStdout,
+        stdin: mockStdin
+      })
+
+      jest.spyOn(streamsPromises, streamsPromises.pipeline.name).mockImplementation(() => {})
+
+      sut.mergeAudioStreams(mockSong, mockReadable)
+
+      expect(executeSoxCommandSpy).toHaveBeenCalledWith(args)
     })
   })
 })
