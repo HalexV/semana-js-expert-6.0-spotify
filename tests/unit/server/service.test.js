@@ -560,4 +560,37 @@ describe('#Service', () => {
       await expect(result).rejects.toThrowError(`the song ${fxName} wasn't found!`)
     })
   })
+
+  describe('appendFxStream', () => {
+    test('it should call pipeline with a Throttle and a Writable', () => {
+      const sut = new Service()
+
+      const mockFx = 'any'
+
+      const pipelineSpy = jest.spyOn(streamsPromises, streamsPromises.pipeline.name).mockImplementationOnce(() => {})
+
+      sut.broadCast = () => TestUtil.generateWritableStream()
+
+      sut.throttleTransform = new Throttle(100000)
+      sut.currentReadable = TestUtil.generateReadableStream(['data'])
+
+      const throttleTransformOnSpy = jest.spyOn(sut.throttleTransform, 'on').mockImplementationOnce(() => {})
+
+      const throttleTransformPauseSpy = jest.spyOn(sut.throttleTransform, 'pause').mockImplementationOnce(() => {})
+
+      const currentReadableUnpipeSpy = jest.spyOn(sut.currentReadable, 'unpipe').mockImplementationOnce(() => {})
+
+      sut.appendFxStream(mockFx)
+
+      const [pipelineArg1, pipelineArg2] = pipelineSpy.mock.calls[0]
+      const [onArg1, onArg2] = throttleTransformOnSpy.mock.calls[0]
+
+      expect(pipelineArg1).toBeInstanceOf(Throttle)
+      expect(pipelineArg2).toBeInstanceOf(Writable)
+      expect(onArg1).toStrictEqual('unpipe')
+      expect(onArg2).toBeInstanceOf(Function)
+      expect(throttleTransformPauseSpy).toHaveBeenCalled()
+      expect(currentReadableUnpipeSpy).toHaveBeenCalledWith(sut.throttleTransform)
+    })
+  })
 })
