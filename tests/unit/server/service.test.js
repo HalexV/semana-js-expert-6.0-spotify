@@ -3,7 +3,7 @@ import fs from 'fs'
 import fsPromises from 'fs/promises'
 import path from 'path'
 import crypto from 'crypto'
-import stream, { PassThrough, Writable } from 'stream'
+import stream, { PassThrough, Readable, Writable } from 'stream'
 import childProcess from 'child_process'
 import Throttle from 'throttle'
 import streamsPromises from 'stream/promises'
@@ -686,6 +686,32 @@ describe('#Service', () => {
       sut.mergeAudioStreams(mockSong, mockReadable)
 
       expect(executeSoxCommandSpy).toHaveBeenCalledWith(args)
+    })
+
+    test('it should call pipelines with the correct args', () => {
+      const sut = new Service()
+      const mockSong = 'any_song'
+      const mockReadable = TestUtil.generateReadableStream(['any'])
+
+      const mockStdout = TestUtil.generateReadableStream(['any'])
+      const mockStdin = TestUtil.generateWritableStream()
+
+      jest.spyOn(sut, sut._executeSoxCommand.name).mockReturnValueOnce({
+        stdout: mockStdout,
+        stdin: mockStdin
+      })
+
+      const pipelineSpy = jest.spyOn(streamsPromises, streamsPromises.pipeline.name).mockImplementation(() => {})
+
+      sut.mergeAudioStreams(mockSong, mockReadable)
+
+      const [pipelineFirstCallArg1, pipelineFirstCallArg2] = pipelineSpy.mock.calls[0]
+      const [pipelineSecondCallArg1, pipelineSecondCallArg2] = pipelineSpy.mock.calls[1]
+
+      expect(pipelineFirstCallArg1).toBeInstanceOf(Readable)
+      expect(pipelineFirstCallArg2).toBeInstanceOf(Writable)
+      expect(pipelineSecondCallArg1).toBeInstanceOf(Readable)
+      expect(pipelineSecondCallArg2).toBeInstanceOf(PassThrough)
     })
   })
 })
