@@ -81,6 +81,14 @@ describe('#View - test suite for presentation layer', () => {
     expect(changeCommandBtnsVisibilitySpy).toHaveBeenCalled()
   })
 
+  test('#onBtnClick - it should return undefined on default assign', async () => {
+    const sut = new View()
+
+    const result = await sut.onBtnClick()
+
+    expect(result).toBe(undefined)
+  })
+
   describe('configureOnBtnClick', () => {
     test('it should assign the function to this.onBtnClick', () => {
       const sut = new View()
